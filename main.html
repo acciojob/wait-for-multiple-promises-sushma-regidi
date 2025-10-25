@@ -31,7 +31,8 @@
       </tr>
     </thead>
     <tbody id="output">
-      <tr>
+      <!-- Add required id for Cypress test -->
+      <tr id="loading">
         <td colspan="2">Loading...</td>
       </tr>
     </tbody>
@@ -40,7 +41,7 @@
   <script>
     const output = document.getElementById("output");
 
-    // Function to create a promise that resolves after a random time between 1 and 3 seconds
+    // Function to create a promise that resolves after 1–3 seconds
     function createPromise(promiseNumber) {
       const delay = Math.random() * 2 + 1; // random between 1 and 3 seconds
       return new Promise(resolve => {
@@ -53,16 +54,11 @@
     // Create 3 promises
     const promises = [createPromise(1), createPromise(2), createPromise(3)];
 
-    const startTime = performance.now();
-
     Promise.all(promises).then(results => {
-      const endTime = performance.now();
-      const totalTime = (endTime - startTime) / 1000; // total in seconds
+      // Remove loading row
+      document.getElementById("loading").remove();
 
-      // Clear "Loading..." row
-      output.innerHTML = "";
-
-      // Add each promise result as a row
+      // Populate each promise result
       results.forEach(result => {
         const row = document.createElement("tr");
         row.innerHTML = `
@@ -72,7 +68,10 @@
         output.appendChild(row);
       });
 
-      // Add total time row
+      // Calculate total (max of all promise times)
+      const totalTime = Math.max(...results.map(r => r.time));
+
+      // Add total row
       const totalRow = document.createElement("tr");
       totalRow.innerHTML = `
         <td><b>Total</b></td>
@@ -84,4 +83,5 @@
 
 </body>
 </html>
+
 
